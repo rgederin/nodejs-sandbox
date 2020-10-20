@@ -21,8 +21,6 @@ const server = http.createServer((req, res) => {
     }
 });
 
-
-
 const createUser = ((req, res) => {
     const body = [];
     
@@ -51,7 +49,7 @@ const renderUsers = ((res) => {
     users.forEach(function(item, index) {
         console.log(item, index)
         res.write('<li>' + item + '</li>');
-      })
+      });
 
     res.write('</ul></body>');
     res.write('</html>');
