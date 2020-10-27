@@ -9,6 +9,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(mainRoutes);
-app.use(userRoutes);
+app.use('/user', userRoutes);
 
 app.listen(3000);
