@@ -1,7 +1,7 @@
 {
-  "name": "online-shop-app",
+  "name": "online-shop",
   "version": "1.0.0",
-  "description": "Basic functionality of online shop",
+  "description": "Online shop with dynamic routing",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
