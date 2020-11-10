@@ -28,6 +28,9 @@ form {
   align-items: center;
 }
 
+.centered {
+  text-align: center;
+}
 .main-header__nav {
   height: 100%;
   display: none;
