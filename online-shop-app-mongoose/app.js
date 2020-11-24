@@ -2,9 +2,11 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+
 
 const errorController = require('./controllers/error');
-const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
 
@@ -33,10 +35,18 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  // const user = new User('Ruslan', 'rgederin@lohika.com');
-  // user.save();
-  app.listen(3000);
-});
+
+mongoose.connect('mongodb+srv://rgederin:rownUovIp5jHzPQ2@cluster0.9acrc.mongodb.net/onlineshop?retryWrites=true&w=majority')
+  .then(result => {
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+// mongoConnect(() => {
+//   // const user = new User('Ruslan', 'rgederin@lohika.com');
+//   // user.save();
+//   app.listen(3000);
+// });
 
 
