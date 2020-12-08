@@ -25,7 +25,13 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-const authRoutes = require('./routes/auth');
+
+
+const loginRoutes = require('./routes/auth/login');
+const signupRoutes = require('./routes/auth/signup');
+const resetRoutes = require('./routes/auth/reset');
+const logoutRoutes = require('./routes/auth/logout');
+const newPasswordRoutes = require('./routes/auth/new-password');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -62,7 +68,12 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
-app.use(authRoutes);
+
+app.use(loginRoutes);
+app.use(signupRoutes);
+app.use(resetRoutes);
+app.use(logoutRoutes);
+app.use(newPasswordRoutes);
 
 app.use(errorController.get404);
 
