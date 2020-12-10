@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoDbStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 
 
 const errorController = require('./controllers/error');
@@ -32,9 +33,37 @@ const signupRoutes = require('./routes/auth/signup');
 const resetRoutes = require('./routes/auth/reset');
 const logoutRoutes = require('./routes/auth/logout');
 const newPasswordRoutes = require('./routes/auth/new-password');
+const e = require('express');
+
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, 'images');
+  },
+  filename: (req, file, callback) => {
+    callback(null, new Date().toISOString() + "-" + file.originalname);
+  }
+});
+
+
+const fileFilter = (req, file, callback) => {
+  if (file.mimetype === 'image/png'
+    || file.mimetype === 'image/jpg'
+    || file.mimetype === 'image/jpeg') {
+    callback(null, true);
+  } else {
+    callback(null, false);
+  }
+}
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({
+  storage: fileStorage,
+  fileFilter: fileFilter
+}).single('image'));
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(session({
   secret: 'my secret',
@@ -84,6 +113,7 @@ app.use('/500', errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
+  console.log(error);
   res.redirect('/500');
 });
 

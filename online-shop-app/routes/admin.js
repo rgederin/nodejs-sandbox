@@ -16,10 +16,10 @@ router.post('/add-product', isAuth, [
     check('title', 'Title of the product should not be empty')
         .notEmpty()
         .trim(),
-    body('imageUrl', 'Image URL should not be empty and should be URL')
-        .notEmpty()
-        .isURL()
-        .trim(),
+    // body('imageUrl', 'Image URL should not be empty and should be URL')
+    //     .notEmpty()
+    //     // .isURL()
+    //     .trim(),
     body('price', 'Product price should not be empty')
         .notEmpty()
         .trim()
