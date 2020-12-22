@@ -10,7 +10,7 @@ const middlewareUtils = require('./utils/middlewareUtils');
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
-
+const auth = require('./utils/auth');
 const app = express();
 
 app.use(bodyParser.json());
@@ -19,10 +19,27 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(middlewareUtils.corsHeadersMiddelware);
 
+app.use(auth);
+
 app.use('/graphql', graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
-    graphiql: true
+    graphiql: true,
+    formatError(err) {
+        if (!err.originalError) {
+            return err;
+        }
+
+        const data = err.originalError.data;
+        const message = err.message || 'An error occcured';
+        const code = err.originalError.code || 500;
+
+        return {
+            message: message,
+            status: code,
+            data: data
+        };
+    }
 }));
 
 app.use(middlewareUtils.handleErrorMiddelware);
