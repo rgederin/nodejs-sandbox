@@ -1,14 +1,14 @@
-const jwt = require('jsonwebtoken');
-const errorUtils = require('./errorUtils');
+import jwt from 'jsonwebtoken';
+import { throwError } from './errorUtils.js';
 
-const corsHeadersMiddelware = (req, res, next) => {
+export const corsHeadersMiddelware = (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 };
 
-const handleErrorMiddelware = (error, req, res, next) => {
+export const handleErrorMiddelware = (error, req, res, next) => {
     console.log('error handling middleware: ', error);
 
     const status = error.statusCode || 500;
@@ -17,7 +17,7 @@ const handleErrorMiddelware = (error, req, res, next) => {
     res.status(status).json({ message: message });
 };
 
-const isAuthMiddelware = (req, res, next) => {
+export const isAuthMiddelware = (req, res, next) => {
     const token = req.get('Authorization')
         .split(' ')[1];
 
@@ -31,14 +31,9 @@ const isAuthMiddelware = (req, res, next) => {
     }
 
     if (!decodedToken) {
-        errorUtils.throwError('Not authenticated', 401);
+        throwError('Not authenticated', 401);
     }
 
     req.userId = decodedToken.userId;
     next();
 }
-
-
-exports.corsHeadersMiddelware = corsHeadersMiddelware;
-exports.handleErrorMiddelware = handleErrorMiddelware;
-exports.isAuthMiddelware = isAuthMiddelware;

@@ -1,31 +1,34 @@
-const express = require('express');
-const { body } = require('express-validator/check');
-const feedController = require('../controllers/feed');
-const middlewareUtils = require('../utils/middlewareUtils');
+import express from 'express';
+
+import { getPosts, createPost, getPost, updatePost, deletePost } from '../controllers/feed.js'
+import { isAuthMiddelware } from '../utils/middlewareUtils.js'
+import validator from 'express-validator'
+const { body, validationResult } = validator
+
 const router = express.Router();
 
-router.get('/posts', middlewareUtils.isAuthMiddelware, feedController.getPosts);
+router.get('/posts', isAuthMiddelware, getPosts);
 
-router.post('/post', middlewareUtils.isAuthMiddelware, [
+router.post('/post', isAuthMiddelware, [
     body('title')
         .trim()
         .isLength({ min: 5 }),
     body('content')
         .trim()
         .isLength({ min: 5 })
-], feedController.createPost);
+], createPost);
 
-router.get('/post/:postId', middlewareUtils.isAuthMiddelware, feedController.getPost);
+router.get('/post/:postId', isAuthMiddelware, getPost);
 
-router.put('/post/:postId', middlewareUtils.isAuthMiddelware, [
+router.put('/post/:postId', isAuthMiddelware, [
     body('title')
         .trim()
         .isLength({ min: 5 }),
     body('content')
         .trim()
         .isLength({ min: 5 })
-], feedController.updatePost);
+], updatePost);
 
-router.delete('/post/:postId', middlewareUtils.isAuthMiddelware, feedController.deletePost);
+router.delete('/post/:postId', isAuthMiddelware, deletePost);
 
-module.exports = router;
+export default router;

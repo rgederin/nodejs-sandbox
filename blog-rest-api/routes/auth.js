@@ -1,9 +1,12 @@
-const express = require('express');
-const { body } = require('express-validator/check');
-const User = require('../models/user');
-const authController = require('../controllers/auth');
+import express from 'express';
+import { User } from '../models/user.js';
+import { signup, login, getUserStatus, updateUserStatus } from '../controllers/auth.js'
+import { isAuthMiddelware } from '../utils/middlewareUtils.js'
+import validator from 'express-validator'
+const { body, validationResult } = validator
+
 const router = express.Router();
-const middlewareUtils = require('../utils/middlewareUtils');
+
 
 router.put('/signup', [
     body('email')
@@ -24,12 +27,10 @@ router.put('/signup', [
     body('name')
         .trim()
         .notEmpty()
-], authController.signup);
+], signup);
 
-router.post('/login', authController.login);
+router.post('/login', login);
+router.get('/status', isAuthMiddelware, getUserStatus);
+router.patch('/status', isAuthMiddelware, updateUserStatus);
 
-router.get('/status', middlewareUtils.isAuthMiddelware, authController.getUserStatus);
-
-router.patch('/status', middlewareUtils.isAuthMiddelware, authController.updateUserStatus);
-
-module.exports = router;
+export default router;

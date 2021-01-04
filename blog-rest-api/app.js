@@ -1,26 +1,31 @@
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import multer from 'multer';
 
-const multerUtils = require('./utils/multerUtils');
-const middlewareUtils = require('./utils/middlewareUtils');
+import feedRoutes from './routes/feed.js';
+import authRoutes from './routes/auth.js';
+
+import { multerSetup } from './utils/multerUtils.js';
+import { corsHeadersMiddelware, handleErrorMiddelware } from './utils/middlewareUtils.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use(multer(multerUtils.multerSetup).single('image'));
+app.use(multer(multerSetup).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use(middlewareUtils.corsHeadersMiddelware);
+app.use(corsHeadersMiddelware);
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
 
-app.use(middlewareUtils.handleErrorMiddelware);
+app.use(handleErrorMiddelware);
 
 mongoose.connect('mongodb+srv://rgederin:rownUovIp5jHzPQ2@cluster0.9acrc.mongodb.net/blog?retryWrites=true&w=majority')
     .then(result => {

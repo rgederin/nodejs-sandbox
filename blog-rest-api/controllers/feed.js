@@ -1,11 +1,17 @@
-const path = require('path');
-const fs = require('fs');
-const { validationResult } = require('express-validator/check');
-const Post = require('../models/post');
-const User = require('../models/user');
-const errorUtils = require('../utils/errorUtils');
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import validator from 'express-validator';
+import { User } from '../models/user.js';
+import { Post } from '../models/post.js';
+import { handleError, throwError } from '../utils/errorUtils.js';
 
-exports.getPosts = async (req, res, next) => {
+const { validationResult } = validator;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export const getPosts = async (req, res, next) => {
     const currentPage = req.query.page || 1;
     const perPage = 2;
 
@@ -23,19 +29,19 @@ exports.getPosts = async (req, res, next) => {
                 totalItems: documentCount
             });
     } catch (err) {
-        errorUtils.handleError(err, next);
+        handleError(err, next);
     }
 };
 
-exports.createPost = async (req, res, next) => {
+export const createPost = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        errorUtils.throwError('Validation failed, entered data is incorrect', 422);
+        throwError('Validation failed, entered data is incorrect', 422);
     }
 
     if (!req.file) {
-        errorUtils.throwError('No image provided', 422);
+        throwError('No image provided', 422);
     }
 
     const post = new Post({
@@ -61,17 +67,17 @@ exports.createPost = async (req, res, next) => {
             }
         });
     } catch (err) {
-        errorUtils.handleError(err, next);
+        handleError(err, next);
     }
 };
 
-exports.getPost = async (req, res, next) => {
+export const getPost = async (req, res, next) => {
     const postId = req.params.postId;
 
     try {
         const post = await Post.findById(postId);
         if (!post) {
-            errorUtils.throwError('Could not find post', 404);
+            throwError('Could not find post', 404);
         }
 
         res.status(200)
@@ -80,15 +86,15 @@ exports.getPost = async (req, res, next) => {
                 post: post
             });
     } catch (err) {
-        errorUtils.handleError(err, next);
+        handleError(err, next);
     }
 };
 
-exports.updatePost = async (req, res, next) => {
+export const updatePost = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        errorUtils.throwError('Validation failed, entered data is incorrect', 422);
+        throwError('Validation failed, entered data is incorrect', 422);
     }
 
     let imageUrl = req.body.image;
@@ -98,18 +104,18 @@ exports.updatePost = async (req, res, next) => {
     }
 
     if (!imageUrl) {
-        errorUtils.throwError('No file picked', 422);
+        throwError('No file picked', 422);
     }
 
     try {
         const post = await Post.findById(req.params.postId);
 
         if (!post) {
-            errorUtils.throwError('Could not find post', 404);
+            throwError('Could not find post', 404);
         }
 
         if (post.creator.toString() !== req.userId) {
-            errorUtils.throwError('Not authorized', 403);
+            throwError('Not authorized', 403);
         }
 
         if (imageUrl !== post.imageUrl) {
@@ -124,26 +130,26 @@ exports.updatePost = async (req, res, next) => {
         res.status(200)
             .json({
                 message: 'Post updated',
-                post: result
+                post: updatedPost
             });
 
     } catch (err) {
-        errorUtils.handleError(err, next);
+        handleError(err, next);
     }
 }
 
-exports.deletePost = async (req, res, next) => {
+export const deletePost = async (req, res, next) => {
     const postId = req.params.postId;
 
     try {
         const post = await Post.findById(postId);
 
         if (!post) {
-            errorUtils.throwError('Could not find post', 404);
+            throwError('Could not find post', 404);
         }
 
         if (post.creator.toString() !== req.userId) {
-            errorUtils.throwError('Not authorized', 403);
+            throwError('Not authorized', 403);
         }
 
         clearImage(post.imageUrl);
@@ -159,7 +165,7 @@ exports.deletePost = async (req, res, next) => {
                 message: "Post was deleted"
             });
     } catch (err) {
-        errorUtils.handleError(err, next);
+        handleError(err, next);
     }
 };
 

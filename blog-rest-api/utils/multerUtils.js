@@ -1,6 +1,6 @@
-const multer = require('multer');
+import multer from 'multer';
 
-const fileStorage = multer.diskStorage({
+export const fileStorage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'images');
     },
@@ -9,7 +9,7 @@ const fileStorage = multer.diskStorage({
     }
 });
 
-const fileFilter = (req, file, callback) => {
+export const fileFilter = (req, file, callback) => {
     if (file.mimetype === 'image/png'
         || file.mimetype === 'image/jpg'
         || file.mimetype === 'image/jpeg') {
@@ -19,9 +19,8 @@ const fileFilter = (req, file, callback) => {
     }
 };
 
-const multerSetup = {
+export const multerSetup = {
     storage: fileStorage,
     fileFilter: fileFilter
 };
 
-exports.multerSetup = multerSetup;
